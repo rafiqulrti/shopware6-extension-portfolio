@@ -28,8 +28,6 @@ A first-class CMS element and block that merchants place through the standard Sh
 - If there is nothing to scroll, the slider, its arrow controls, autoplay, and looping all switch off. A single brand renders as a static logo rather than an autoplaying carousel of one, which is the tell-tale sign of a section that was configured but not thought about.
 - Per-breakpoint slide counts derive from that same clamped value, so the section never has to be re-tuned after adding or removing a supplier.
 
-Returning criteria during the collect phase allows Shopware's CMS data resolution layer to coordinate data loading instead of forcing the element to execute its own repository query directly during rendering.
-
 ## My Contribution
 
 I designed and implemented the plugin end to end:
@@ -41,6 +39,7 @@ I designed and implemented the plugin end to end:
 - The **service wiring** and plugin scaffolding.
 
 ## Architecture
+Returning criteria during the collect phase allows Shopware's CMS data resolution layer to coordinate data loading instead of forcing the element to execute its own repository query directly during rendering.
 
 **Services.** A single CMS element resolver, registered in the container and tagged so Shopware's CMS layer discovers it automatically. It receives the manufacturer repository and a logger through constructor injection. There is no custom controller, no entity, and no database table — the plugin composes existing platform data rather than introducing storage of its own, which is what keeps it upgrade-safe and cheap to maintain.
 
@@ -73,7 +72,8 @@ Returning criteria rather than querying directly is the important architectural 
 
 ## Performance
 
-**Batched data loading.** The resolver returns a criteria collection from the collect phase rather than executing a search itself. This lets Shopware's CMS layer gather criteria from every slot on the page and resolve them together, so a layout containing this element plus several core elements issues one coordinated round of queries instead of one query per element. Executing the search inside the resolver would have worked and would have been simpler, but it would have added a query per slot and forfeited the platform's batching entirely.
+**Batched data loading.** The resolver returns a criteria collection from the collect phase rather than executing a search itself. This lets Shopware's CMS layer gather criteria from every slot on the page and resolve them together, so a layout containing this element plus several core elements issues **Coordinated CMS data loading.** The resolver returns criteria during the collect phase rather than executing repository searches directly. This allows Shopware's CMS data-resolution layer to coordinate loading with the other
+elements on the page and avoids introducing an independent repository lookup inside the element's rendering path.. Executing the search inside the resolver would have worked and would have been simpler, but it would have added a query per slot and forfeited the platform's batching entirely.
 
 **Minimal associations.** Only the media association required for logos is declared. Manufacturer records carry considerably more relational data than this section needs, and loading it would cost on every page render for data that is never displayed.
 
