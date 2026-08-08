@@ -15,6 +15,7 @@ as part of my work at Harris Digital.
 
 | Case study | What it covers |
 |---|---|
+
 | [Product Group Page — Specification Table Listings](docs/product-group-page-plugin.md) | Storefront controller and routes, page loader, service layer, migration and custom fields, admin column builder, lazy-loaded interactive tables |
 | [Product Detail Dropdown Sections](docs/product-dropdown-plugin.md) | Criteria enrichment, config-driven content assembly, media resolution, custom admin config component, CMS element |
 | [B2B Storefront Enhancements](docs/b2b-storefront-enhancements.md) | Shopware Commercial integration — multi-warehouse stock, shopping list imagery, locale-aware label resolution, batched loading |
@@ -47,6 +48,26 @@ For Shopware projects I work across the full application stack, including:
 - Configuration and multi-channel functionality
 - Debugging, deployment and production support
 - Linux, Nginx, PHP-FPM, database and server maintenance
+
+## My Responsibilities
+
+I work across the complete Shopware 6 delivery lifecycle, from technical
+planning through development, deployment, and production support.
+
+Depending on the project, my responsibilities include:
+
+- Shopware solution architecture and technical planning
+- PHP and Symfony backend development
+- Custom plugin architecture and implementation
+- DAL repositories, criteria, entities, associations, and migrations
+- Administration extensions and CMS components
+- Twig storefront development and custom theme implementation
+- JavaScript and SCSS storefront functionality
+- Sales-channel-scoped configuration and multi-channel behaviour
+- Product and catalog data migration
+- API and third-party integrations
+- Performance investigation and production troubleshooting
+- Deployment, Linux, Nginx, PHP-FPM, Redis, and OpenSearch support
 
 ## Technologies
 
