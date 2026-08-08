@@ -12,23 +12,21 @@ Shopware ships manufacturer data as part of the product model, but provides no w
 - **Hand-written HTML in a CMS block.** Fragile, unstyled, and requires someone comfortable writing markup every time a supplier relationship changes.
 - **A third-party slider plugin.** Adds another JavaScript library to the page and another dependency to keep compatible across Shopware upgrades, for one section.
 
-In every case the brand list drifted out of sync with the manufacturers actually in the catalog, and none of them linked a logo to that brand's products — so the section built trust but produced no traffic.
+These approaches also made the brand section harder to keep aligned with the catalog and did not provide a structured path from a manufacturer logo to that manufacturer's product listing.
 
 ## Solution
 
-A first-class CMS element and block that merchants place through the standard Shopware layout builder, exactly like any core element.
+A first-class CMS element and block that merchants place through the standard Shopware layout builder alongside the platform's core elements.
 
 **What the merchant does.** Drag the block into a CMS layout, set a section heading, and choose which manufacturers to show. No markup, no image editing, no developer.
 
-**What the shopper gets.** A responsive logo slider where every logo links through to a product listing filtered to that manufacturer. This is the piece that turns a credibility section into a browsing path — a shopper who recognises a brand is one click from that brand's products, and the destination uses Shopware's own listing and filtering, so it needs no custom controller and inherits sorting, pagination, and further filtering for free.
+**What the shopper gets.** A responsive logo slider where every logo links through to a product listing filtered to that manufacturer. This is the piece that turns a credibility section into a browsing path — a shopper who recognises a brand is one click from that brand's products, and the destination uses Shopware's own listing and filtering, so the feature does not need a custom listing controller and retains the platform's sorting, pagination, and filtering behaviour.
 
 **Behaviour adapts to the data.** The slider configures itself from the number of brands actually selected rather than from a fixed setting:
 
 - If fewer brands are selected than the configured slides-per-view, the layout clamps to the real count — so three brands render as three centred logos, not three logos and three gaps.
 - If there is nothing to scroll, the slider, its arrow controls, autoplay, and looping all switch off. A single brand renders as a static logo rather than an autoplaying carousel of one, which is the tell-tale sign of a section that was configured but not thought about.
-- Per-breakpoint slide counts derive from that same clamped value, so the section never has to be re-tuned after adding or removing a supplier.
-
-Returning criteria during the collect phase allows Shopware's CMS data resolution layer to coordinate data loading instead of forcing the element to execute its own repository query directly during rendering.
+- Per-breakpoint slide counts derive from that same clamped value, reducing the need for manual retuning when brands are added or removed.
 
 ## My Contribution
 
@@ -42,7 +40,7 @@ I designed and implemented the plugin end to end:
 
 ## Architecture
 
-**Services.** A single CMS element resolver, registered in the container and tagged so Shopware's CMS layer discovers it automatically. It receives the manufacturer repository and a logger through constructor injection. There is no custom controller, no entity, and no database table — the plugin composes existing platform data rather than introducing storage of its own, which is what keeps it upgrade-safe and cheap to maintain.
+**Services.** A single CMS element resolver, registered in the container and tagged so Shopware's CMS layer discovers it automatically. It receives the manufacturer repository and a logger through constructor injection. There is no custom controller, custom entity, or plugin-owned database table. The plugin composes existing platform data, which avoids additional schema and reduces maintenance associated with custom persistence.
 
 **Data resolution.** The resolver implements Shopware's two-phase CMS resolution contract:
 
@@ -73,28 +71,28 @@ Returning criteria rather than querying directly is the important architectural 
 
 ## Performance
 
-**Batched data loading.** The resolver returns a criteria collection from the collect phase rather than executing a search itself. This lets Shopware's CMS layer gather criteria from every slot on the page and resolve them together, so a layout containing this element plus several core elements issues one coordinated round of queries instead of one query per element. Executing the search inside the resolver would have worked and would have been simpler, but it would have added a query per slot and forfeited the platform's batching entirely.
+**Coordinated CMS data loading.** The resolver returns criteria during the collect phase rather than executing repository searches directly. This allows Shopware's CMS data-resolution layer to coordinate loading with the other elements on the page and avoids introducing an independent repository lookup inside the element's rendering path.
 
-**Minimal associations.** Only the media association required for logos is declared. Manufacturer records carry considerably more relational data than this section needs, and loading it would cost on every page render for data that is never displayed.
+**Minimal associations.** Only the media association required for logos is declared. Manufacturer records carry more relational data than this section needs, so unrelated associations are not requested for the slider.
 
-**A flat render payload.** Entities are mapped to a small array of scalars before reaching Twig. The template never traverses entity relations during rendering, which keeps template execution predictable and avoids lazy-loading surprises inside a loop.
+**A flat render payload.** Entities are mapped to a small array of scalars before reaching Twig. The template therefore renders prepared values rather than traversing entity relations inside the loop.
 
-**No additional JavaScript dependency.** The slider is built on the storefront's existing slider implementation, driven entirely by a JSON configuration attribute in the markup. No extra carousel library is bundled, so the section adds no JavaScript weight to the page and nothing new to keep compatible across platform upgrades.
+**No additional carousel dependency.** The slider reuses the storefront's existing slider implementation and is driven by configuration in the markup, avoiding another third-party carousel library for this feature.
 
-**Lazy-loaded images.** Logos below the fold defer loading, which matters on a section that may hold a few dozen images.
+**Lazy-loaded images.** Logos below the fold defer loading, reducing initial image work when a section contains many brands.
 
-**Work avoided when there is nothing to do.** Autoplay, looping, and control rendering are all switched off when the brand count doesn't exceed the visible slots — no timers running and no controls in the DOM for a slider that cannot move.
+**Work avoided when there is nothing to scroll.** Autoplay, looping, and controls are disabled when the brand count does not exceed the visible slots, so a static set of logos is not treated as an interactive carousel.
 
 ## Multi-Channel Support
 
 Element configuration is stored per CMS layout, and layouts are assigned per sales channel, so each channel can run its own brand selection, heading, and slider behaviour from the same catalog — a B2B channel can foreground its industrial suppliers while a retail channel foregrounds consumer brands, with no duplicated data.
 
-Manufacturer names resolve through the translation layer, so a multi-language channel receives correctly translated names. Logo links resolve against the requesting channel's context, so a shopper is always sent to a listing within the channel they are browsing.
+Manufacturer names resolve through the translation layer, so a multi-language channel receives correctly translated names. Logo links resolve against the requesting channel's context, keeping the destination aligned with the channel the shopper is browsing.
 
 ## Accessibility
 
 - The slider region carries a landmark role and is labelled with the section heading, so screen-reader users encounter it as a named region rather than an unexplained group of images.
-- Each logo link has an accessible name derived from the brand name, so a link is never announced as bare image or URL text.
+- Each logo link has an accessible name derived from the brand name, so the link is announced with meaningful brand text rather than relying on image or URL text alone.
 - Logo images carry the brand name as alt text; brands without an uploaded logo fall back to a styled text tile rather than a broken image.
 - Previous and next controls use translated labels rather than icon-only markup.
 - The slider region is keyboard focusable.

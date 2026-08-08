@@ -4,9 +4,9 @@
 
 ## Business Problem
 
-Shopware Commercial provides substantial B2B capability, but capability held in the data model is not the same as capability visible to a buyer. Three gaps mattered on this store, each producing a concrete cost:
+Shopware Commercial provides substantial B2B capability, but data available in the platform is not automatically presented in the form a buyer needs. Three storefront gaps mattered on this store, each affecting buyer experience or support effort:
 
-**Stock is a single number, but the business has several warehouses.** Multi-warehouse tracks stock per location, yet the product page shows one aggregate figure. A trade buyer's real question is not "is there stock" but "is there stock I can collect today, or that ships from the depot nearest me". Without per-location visibility that question becomes a phone call — for every order.
+**Stock is a single number, but the business has several warehouses.** Multi-warehouse tracks stock per location, yet the product page shows one aggregate figure. A trade buyer's real question is not "is there stock" but "is there stock I can collect today, or that ships from the depot nearest me". Without per-location visibility, buyers may need to contact sales or support before completing an order.
 
 **Shopping lists showed products without imagery.** B2B shopping lists routinely run to dozens of line items and are reviewed repeatedly before becoming an order. A list of text rows is slow to scan and easy to misread, particularly across variants of similar products. The underlying difficulty is that variants frequently have no cover image of their own, inheriting it from the parent — so a naive image lookup returns nothing for exactly the products most likely to appear on a trade list.
 
@@ -20,7 +20,7 @@ A companion plugin to the storefront theme that resolves each gap at the page-lo
 
 Crucially, it **falls back to the parent product** when a variant carries no warehouse data of its own. Warehouse assignment is commonly maintained at parent level, and without the fallback the feature would appear broken on precisely the variant pages where it is most needed.
 
-**Imagery on shopping lists.** Line items are enriched with cover imagery, with the same parent-fallback reasoning: variants lacking their own cover have their parent's image resolved and applied, so a list renders completely rather than showing gaps for half its rows.
+**Imagery on shopping lists.** Line items are enriched with cover imagery, with the same parent-fallback reasoning: variants lacking their own cover have their parent's image resolved and applied, reducing missing imagery on variant-heavy shopping lists.
 
 **Human-readable option labels.** Stored option keys are mapped to their configured labels, chosen by locale, so buyers see intended wording in their own language.
 
@@ -32,7 +32,7 @@ I designed and implemented the plugin: all three subscribers including their fal
 
 **Services.** Three event subscribers, registered with autowiring and autoconfiguration and discovered through the kernel event subscriber tag, each receiving the repository it needs. No entities, tables, migrations, or controllers — the plugin resolves and shapes data that already exists in the platform and its commercial extensions.
 
-The separation of concerns is deliberate: each subscriber owns one page-level concern and can be enabled, disabled, or replaced independently. Registering three narrow subscribers rather than one broad one also means a change to shopping list behaviour carries no risk to product page behaviour.
+The separation of concerns is deliberate: each subscriber owns one page-level concern and can be enabled, disabled, or replaced independently. Registering three narrow subscribers rather than one broad one reduces coupling between shopping-list behaviour, product-page behaviour, and label resolution.
 
 **Subscribers.**
 
@@ -51,7 +51,7 @@ The separation of concerns is deliberate: each subscriber owns one page-level co
 - Identifies items still lacking cover media, collects their parent identifiers, de-duplicates, and issues a **second batched query** for those parents.
 - Applies resolved covers back onto the line items.
 
-Two queries total, regardless of list length — the shape that matters when the feature exists specifically for long lists.
+The loading strategy batches product identifiers and performs a second parent lookup only for items that still need inherited cover media, avoiding a repository lookup for each line item.
 
 *Option label resolution* listens to the product page-loaded event and:
 
@@ -85,11 +85,11 @@ Two queries total, regardless of list length — the shape that matters when the
 
 ## Performance
 
-**Batched loading, always.** Shopping list enrichment resolves an entire list in two queries — one for the products, one for the parents that still need covers — rather than a query per line item. On a fifty-line list this is the difference between two queries and a hundred.
+**Batched loading by design.** Shopping-list enrichment loads products as a batch and performs a second batched parent lookup only for items that still need inherited covers. This avoids a repository lookup for each individual line item.
 
-**Fallback queries are conditional.** The parent lookup runs only when items actually lack cover media, and only for the de-duplicated set of parent identifiers. A list of products that all carry their own covers issues one query.
+**Fallback queries are conditional.** The parent lookup runs only when items actually lack cover media, and only for the de-duplicated set of parent identifiers. When every item already has cover media, the parent lookup is skipped.
 
-**Early exit before work.** Every subscriber returns before querying when its precondition fails — no configured option value, no warehouse data, no line items. Pages outside each feature's scope pay a single array read.
+**Early exit before work.** Every subscriber returns before querying when its precondition fails — no configured option value, no warehouse data, no line items. Pages outside each feature's scope return before repository work is performed.
 
 **Associations declared, not traversed.** Warehouse and cover associations are declared on criteria so data arrives in the same query, avoiding lazy loading inside loops.
 

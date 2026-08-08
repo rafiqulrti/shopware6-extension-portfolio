@@ -1,6 +1,6 @@
 # Custom Storefront Theme
 
-*A B2B-oriented Shopware 6 storefront theme built by extension rather than replacement — configurable in the administration, and structured to survive platform upgrades.*
+*A B2B-oriented Shopware 6 storefront theme built by extension rather than replacement — configurable in the administration and structured to reduce upgrade maintenance.*
 
 ## Business Problem
 
@@ -12,7 +12,7 @@ The default Shopware storefront is a capable, deliberately neutral retail templa
 - **Listing controls are incomplete for the use case.** Buyers comparing many similar products want to control result density; the default offers sorting but no per-page control.
 - **Product detail emphasises the wrong things.** Consumer-oriented tax and pricing presentation and a separated product title don't match how a trade buyer reads a page.
 
-The obvious approach — copying the storefront templates and editing them — is also the one that guarantees an expensive future. A copied template is frozen at the version it was copied from: it silently misses every upstream fix, accessibility improvement, and security change, and each platform upgrade becomes a manual reconciliation across dozens of files.
+Copying large portions of the storefront and editing them directly can create significant maintenance work. Copied templates stop inheriting upstream changes in the areas they replace, so platform upgrades require those custom copies to be reviewed against changes in the core storefront.
 
 The real requirement was therefore two-sided: a distinctly branded, B2B-appropriate storefront, built so that platform upgrades remain routine.
 
@@ -20,7 +20,7 @@ The real requirement was therefore two-sided: a distinctly branded, B2B-appropri
 
 A custom theme that **extends** the storefront rather than replacing it. Every template override inherits from its core counterpart and overrides only the specific blocks that need to change, calling through to the parent for everything else.
 
-The practical consequence is that the theme's surface area is small and deliberate. Core markup, core accessibility work, and core fixes continue to flow through on upgrade; only the intentionally changed blocks are the theme's responsibility to maintain.
+The practical consequence is that the theme's custom surface area stays deliberate. Blocks that are not overridden remain inherited from the storefront, while the intentionally changed blocks are the areas that need focused review during upgrades.
 
 On top of that foundation:
 
@@ -33,7 +33,7 @@ On top of that foundation:
 
 ## My Contribution
 
-I designed and built the theme end to end: the theme configuration schema, the full Twig override layer, the SCSS architecture, the custom JavaScript plugins, the CMS element styling and overrides, and the responsive behaviour. I also established the extend-don't-copy convention that the theme follows throughout, which is what keeps its upgrade cost low.
+I designed and built the theme end to end: the theme configuration schema, the full Twig override layer, the SCSS architecture, the custom JavaScript plugins, the CMS element styling and overrides, and the responsive behaviour. I also established the extend-don't-copy convention used throughout the theme to reduce duplicated storefront code and keep upgrade review focused.
 
 ## Theme Configuration
 
@@ -66,10 +66,10 @@ Patterns used throughout:
 - **Additive overrides.** A block is overridden to insert new markup before or after a call to the parent block — used for the top banner above the header, and the newsletter block above the footer content. Core markup is untouched.
 - **Targeted replacement.** Only the specific block whose markup must change is overridden — for example the search column in the header, or the sorting control in the listing.
 - **Deliberate suppression.** Where a core section is intentionally removed, its block is overridden empty rather than the surrounding template being copied. This makes the removal explicit, greppable, and trivially reversible — and, importantly, it leaves the block structure intact for anything else extending it.
-- **Namespaced includes.** Theme partials are included through the theme's own Twig namespace, so they resolve regardless of theme inheritance depth.
+- **Namespaced includes.** Theme partials are included through the theme's own Twig namespace so references remain explicit across the intended theme inheritance chain.
 - **Defensive variable resolution.** Several overrides need a category context that different page types expose differently. Rather than assuming one shape, the templates resolve through a documented fallback chain — the page's own category, then the active navigation, then the product's SEO category, then a breadcrumb lookup by identifier, then the global navigation context. This is what makes shared components such as breadcrumbs and category headings behave correctly on category pages, product pages, search results, and landing pages without a separate template for each.
 
-The `parent()` call is what makes this sustainable. Every block that isn't explicitly changed continues to render core markup — so upstream improvements to those blocks arrive with the platform upgrade rather than needing to be ported.
+The `parent()` call keeps overrides narrow. Blocks that are not explicitly changed continue to render the inherited storefront markup, reducing the amount of code that must be manually reconciled during upgrades.
 
 ## SCSS
 
@@ -85,14 +85,14 @@ The `parent()` call is what makes this sustainable. Every block that isn't expli
 
 ## JavaScript
 
-All custom behaviour is written against **Shopware's storefront plugin system** rather than as standalone scripts — extending the platform's plugin base class and registering through the plugin manager with a CSS selector and default options. This means each plugin participates correctly in the platform's lifecycle, is initialised on dynamically loaded content, and can be reconfigured per element from Twig.
+All custom behaviour is written against **Shopware's storefront plugin system** rather than as standalone scripts — extending the platform's plugin base class and registering through the plugin manager with a CSS selector and default options. This keeps the custom behaviour within Shopware's storefront plugin lifecycle and allows configuration to be passed from Twig through element options.
 
 Three plugins:
 
 **Sticky header.** Clones the navigation, appends it to the document, and reveals it once the user passes a configurable scroll depth. Notable behaviours:
 
 - It **subscribes to the platform's viewport events** and disables itself entirely on small viewports, where a sticky duplicate of the navigation would consume scarce vertical space. On viewport change it re-evaluates and initialises or tears itself down accordingly, rather than only checking on page load.
-- It **removes the duplicated element's identifier attribute** when cloning — a small detail that prevents duplicate IDs in the document, which would otherwise break both accessibility and any behaviour that resolves the navigation by ID.
+- It **removes the duplicated element's identifier attribute** when cloning — a small detail that prevents duplicate IDs in the document, which avoids duplicate IDs and the accessibility or selector problems they can create.
 - Its scroll threshold comes from theme configuration through element options.
 
 **Category navigation off-canvas.** Reuses the storefront's own off-canvas implementation rather than implementing a panel, so the mobile category panel inherits the platform's focus handling, backdrop, and close behaviour and matches the filter panel shoppers already know.
@@ -137,7 +137,7 @@ The theme customises CMS output through the same extend-and-override approach us
 
 - **Product name relocated** into the buy widget, adjacent to price and purchasing controls, by rendering the core product-name CMS element with a constructed element configuration — reusing core's element rather than hand-writing a heading, so its markup and styling stay consistent with the rest of the page.
 - **Tax presentation removed** from the buy widget, as it did not fit the B2B pricing presentation.
-- **Breadcrumb resolution hardened.** Product pages don't always expose a category directly, so the breadcrumb resolves through the product's SEO category, its first assigned category, or a breadcrumb lookup by SEO category identifier. This addresses a real and visible failure — products reached from search or a direct link otherwise render without a breadcrumb trail.
+- **Breadcrumb resolution hardened.** Product pages don't always expose a category directly, so the breadcrumb resolves through the product's SEO category, its first assigned category, or a breadcrumb lookup by SEO category identifier. This provides a fallback for product pages reached from contexts where a direct category object is not available.
 - **Category context heading** rendered above the product content, using the same resolution chain.
 - **CMS breadcrumb block suppressed** to avoid duplicate breadcrumb rendering, since the theme renders breadcrumbs from the base layout.
 
@@ -151,9 +151,9 @@ The theme customises CMS output through the same extend-and-override approach us
 
 ## Shopware Upgrades and Compatibility
 
-Upgrade safety was a design constraint from the outset, not a later concern.
+Upgrade maintainability was a design constraint from the outset, not a later concern.
 
-**Extension over duplication.** Every template override extends its core counterpart and overrides named blocks, calling the parent for the remainder. Core markup, core fixes, and core accessibility improvements flow through automatically on upgrade. The theme's maintenance surface is limited to the blocks it deliberately changed — a small, enumerable set — rather than every file it might otherwise have copied.
+**Extension over duplication.** Every template override extends its core counterpart and overrides named blocks, calling the parent for the remainder. Keeping overrides narrowly scoped allows more upstream storefront behaviour to remain inherited and limits upgrade review to the areas the theme deliberately changes.
 
 **Theme inheritance declared explicitly.** The theme declares the storefront in its view, style, script, and asset inheritance chains, so platform assets and templates resolve ahead of the theme's own additions and the theme layers on top rather than displacing them.
 
@@ -163,7 +163,7 @@ Upgrade safety was a design constraint from the outset, not a later concern.
 
 **Behaviour driven by configuration, not forks.** Features such as the sticky header are switched by theme configuration rather than by maintaining template variants, so there is a single code path to verify after an upgrade.
 
-**No core modification.** The theme introduces no core patches, no template copies from the platform, and no monkey-patched JavaScript. Upgrades are a dependency bump and a theme recompile, followed by verification of the deliberately-overridden blocks.
+**No core modification.** The theme introduces no core patches or monkey-patched JavaScript, and it avoids broad template copies from the platform. This keeps upgrades focused on dependency updates, theme recompilation, and verification of the deliberately overridden areas rather than maintenance of a storefront fork.
 
 ## Screenshots
 

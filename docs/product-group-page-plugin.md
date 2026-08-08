@@ -29,7 +29,7 @@ A category-level feature that converts a category page into a specification tabl
 - **Inline row detail** — clicking a row expands product detail, including imagery, beneath it. The buyer compares, drills into one row, and returns to the comparison without losing their place or their scroll position.
 - **Progressive loading.** Tables render an initial, configurable number of rows with a merchant-labelled "view all" control for the remainder.
 
-**Tables load as they are needed.** Sections load when scrolled into view rather than all at page load, so a page containing many child categories stays fast regardless of how many it holds.
+**Tables load as they are needed.** Sections load when scrolled into view rather than all at page load, avoiding the cost of loading every child-category table during the initial request.
 
 ## My Contribution
 
@@ -55,18 +55,18 @@ I designed and implemented the plugin end to end:
 
 The container also declares explicit aliases for the abstract navigation, category, and product listing routes, so the plugin depends on the platform's abstract route contracts rather than concrete implementations — meaning other plugins decorating those routes remain in the chain.
 
-**Subscribers.** A subscriber on the navigation page-loaded event reads the category's configuration field and returns immediately unless the feature is enabled for that category. When it is, it delegates to the page loader and attaches the result to the page as a named extension. The check is a single array read on an already-loaded entity, so categories not using the feature pay effectively nothing.
+**Subscribers.** A subscriber on the navigation page-loaded event reads the category's configuration field and returns immediately unless the feature is enabled for that category. When it is, it delegates to the page loader and attaches the result to the page as a named extension. Categories not using the feature exit before the plugin performs its additional product-loading and table-building work.
 
 **Controllers.** A storefront controller with two AJAX routes, both scoped to the storefront and marked as XML HTTP requests:
 
-- **Table reload** (POST) — re-resolves columns and rows for a category and returns a rendered table body fragment. Returning rendered markup rather than JSON means sorting, searching, and pagination all reuse exactly the same Twig used for the initial render, so there is no second rendering path to keep in sync — a common source of drift in table features.
+- **Table reload** (POST) — re-resolves columns and rows for a category and returns a rendered table body fragment. Returning rendered markup rather than JSON lets sorting, searching, and pagination reuse the same Twig partial used for the initial table body, reducing duplication between initial and interactive rendering paths.
 - **Product detail** (GET) — returns a rendered detail fragment for one product, or a no-content response when the product isn't available in the channel.
 
 Both responses set explicit no-store cache headers, since their content is context- and configuration-dependent.
 
-**DAL and criteria.** Product loading goes through the platform's abstract product listing route, so listings inherit the store's own listing behaviour — availability rules, channel visibility, filtering and sorting — rather than reimplementing it. Criteria are built dynamically: the column resolver reports which associations the configured columns require, and only those are added. A table with no property columns never loads the property association.
+**DAL and criteria.** Product loading goes through the platform's abstract product listing route, so listings inherit the store's own listing behaviour — availability rules, channel visibility, filtering and sorting — rather than reimplementing it. Criteria are built dynamically: the column resolver reports which associations the configured columns require, and only those are added. A table with no property columns does not request the property association.
 
-The product loader also implements a **fallback path**. If the listing route returns nothing, it retries with a direct repository search filtered by channel availability and category membership, with exact total counting and search term applied. Listing routes can legitimately return empty for configuration reasons that have nothing to do with whether products exist in the category; the fallback means a misconfiguration degrades to a working table rather than an empty page.
+The product loader also implements a **fallback path**. If the listing route returns no products, it can retry with a direct repository search filtered by channel availability and category membership, with total counting and the search term applied. This provides a secondary loading path for cases where listing configuration prevents the primary route from returning the expected category products.
 
 **Entities and custom fields.** No custom entity or table. A migration provisions a category custom field set containing an enable flag and a JSON column configuration, plus its administration relation. Using custom fields rather than a bespoke entity means the configuration is part of the category record — it exports, imports, syncs, and versions with the category through the platform's own mechanisms, and there is no schema of the plugin's own to maintain across upgrades.
 
@@ -74,7 +74,7 @@ The product loader also implements a **fallback path**. If the listing route ret
 
 **Structs.** Two structs carry data from the loader to templates — a page struct holding the category, its child sections, and the view-all settings; and a child struct holding one section's category, columns, rows, load state, and total.
 
-**Administration components.** A column builder component loads the store's property groups and custom fields through the repository factory and presents them alongside core field options as one combined picker. Columns can be added, removed, and reordered, with positions renumbered on every change. The category detail page is extended to host the builder, and the raw custom field set is filtered out of the generic custom fields area — so the merchant sees a purpose-built column builder instead of a raw JSON field, which is the difference between a feature that gets used and one that gets a support ticket.
+**Administration components.** A column builder component loads the store's property groups and custom fields through the repository factory and presents them alongside core field options as one combined picker. Columns can be added, removed, and reordered, with positions renumbered on every change. The category detail page is extended to host the builder, and the raw custom field set is filtered out of the generic custom fields area — so the merchant sees a purpose-built column builder instead of a raw JSON field, which gives merchants a purpose-built interface instead of exposing the underlying JSON configuration directly.
 
 **Storefront templates.** A listing element override swaps in the table presentation when the page carries the feature's extension, keeping the original listing in the DOM but hidden and marked aria-hidden so core listing behaviour that depends on it continues to function. Table markup is split into a wrapper, a separately-renderable body, and a row detail fragment — the split that lets the AJAX routes re-render exactly one piece.
 
@@ -105,17 +105,17 @@ Performance was the main design pressure, since the feature exists to render a g
 
 **Lazy loading by intersection.** Sections load their tables when scrolled into view rather than at page load. A page with many child categories therefore performs work proportional to what the buyer actually looks at, not to how the catalog is structured.
 
-**Associations resolved from configuration.** The column resolver reports which associations the configured columns actually need, and only those are added to the criteria. A table of core fields and custom fields never pays for the property association — a meaningful saving, since property loading is among the more expensive associations on a large product set.
+**Associations resolved from configuration.** The column resolver reports which associations the configured columns require, and only those are added to the criteria. A table using only core fields and custom fields therefore does not request the property association.
 
-**Bounded result sets at every level.** The product loader applies a default limit when none is supplied, the page loader applies the configured initial limit per section, and the view-all control raises it on demand. No code path can issue an unbounded product query.
+**Bounded result sets at every level.** The product loader applies a default limit when none is supplied, the page loader applies the configured initial limit per section, and the view-all control raises that limit on demand.
 
-**Client-side sorting where it is safe.** Sorting already-loaded rows happens in the browser against pre-computed sort values, with no request at all. Sort values are normalised server-side during row mapping — lower-cased for strings, cast to float for numbers, with empty numerics sorted deterministically — so the browser compares prepared scalars rather than parsing formatted display strings. Only columns backed by a server-side sorting key round-trip.
+**Client-side sorting where it is safe.** Sorting already-loaded rows can happen in the browser against pre-computed sort values without an additional request. Sort values are normalised server-side during row mapping — lower-cased for strings, cast to float for numbers, with empty numerics sorted deterministically — so the browser compares prepared scalars rather than parsing formatted display strings. Only columns backed by a server-side sorting key round-trip.
 
-**Debounced search.** Search input is debounced before triggering a reload, so a typed query produces one request rather than one per character.
+**Debounced search.** Search input is debounced before triggering a reload, to avoid triggering a reload for each individual keystroke.
 
 **Fragment rendering, not full pages.** AJAX responses render only the table body or a single row's detail, so an interaction transfers a fragment rather than a page.
 
-**Flat row payloads.** Products are mapped to plain arrays of scalars before reaching Twig, so no entity traversal or lazy loading happens inside a render loop over hundreds of rows.
+**Flat row payloads.** Products are mapped to plain arrays of scalars before reaching Twig, so Twig renders prepared scalar values rather than traversing product entities inside the table loop.
 
 **Explicit cache headers.** AJAX responses are marked no-store, preventing intermediate caches from serving one context's table to another.
 
@@ -124,7 +124,7 @@ Performance was the main design pressure, since the feature exists to render a g
 The feature is channel-aware at every layer.
 
 - **Product loading** runs through the sales-channel product listing route and sales-channel-scoped repositories, so tables show only products visible and available in the requesting channel, at that channel's prices, under that channel's rules.
-- **Availability filtering** in the fallback path and the row detail route is explicitly scoped to the current channel's identifier, so a product hidden in one channel cannot surface through a direct AJAX request in another.
+- **Availability filtering** in the fallback path and the row detail route is explicitly scoped to the current channel's identifier, so the fallback and detail routes apply the requesting channel's availability rules.
 - **Plugin configuration** — the initial row limit and the view-all label — is read scoped to the current sales channel, so each channel sets its own density and wording.
 - **Column configuration is per category**, and because categories are assigned to channels through the navigation tree, a channel-specific category branch carries its own table layout.
 - **Property and custom field values** resolve through the translation layer, so multi-language channels receive translated specification values.

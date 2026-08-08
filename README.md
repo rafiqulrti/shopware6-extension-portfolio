@@ -1,8 +1,8 @@
 # Shopware 6 Development Portfolio — Case Studies
 
-A collection of sanitized case studies covering Shopware 6 websites,
+A collection of sanitized case studies covering Shopware 6 website delivery,
 custom plugins, administration extensions, CMS development, storefront
-customization, data workflows, and theme development that I delivered
+customization, data workflows, B2B features, and theme development completed
 as part of my work at Harris Digital.
 
 > **Portfolio and confidentiality notice:** Production source code and
@@ -11,43 +11,49 @@ as part of my work at Harris Digital.
 > source code, credentials, private repository addresses, customer data,
 > production configuration, or confidential client information.
 
-## Case Studies
+## Website / Project Case Studies
 
 | Case study | What it covers |
 |---|---|
+| [Laticrete — Shopware 6 Full-Stack Ecommerce Development](docs/laticrete-shopware6-project.md) | End-to-end Shopware delivery across storefront, CMS, custom plugins, theme work, catalog data, deployment, and production support |
+| [Basetheme — Shopware 6 Full-Stack Ecommerce Development](docs/basetheme-shopware6-project.md) | Full-stack Shopware implementation covering storefront development, reusable theme work, CMS, plugins, data, configuration, and infrastructure support |
 
-| [Product Group Page — Specification Table Listings](docs/product-group-page-plugin.md) | Storefront controller and routes, page loader, service layer, migration and custom fields, admin column builder, lazy-loaded interactive tables |
-| [Product Detail Dropdown Sections](docs/product-dropdown-plugin.md) | Criteria enrichment, config-driven content assembly, media resolution, custom admin config component, CMS element |
-| [B2B Storefront Enhancements](docs/b2b-storefront-enhancements.md) | Shopware Commercial integration — multi-warehouse stock, shopping list imagery, locale-aware label resolution, batched loading |
-| [Brand / Manufacturer Slider — CMS Element](docs/brand-slider-cms-element.md) | Custom CMS element and block, CMS data resolver, batched DAL loading, data-driven responsive slider |
-| [Featured Category Sections — CMS Elements and Page Extension](docs/featured-category-cms-elements.md) | Two parallel integration paths — CMS elements and a config-driven page extension via event subscriber, scoped per sales channel |
-| [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS architecture, storefront JS plugins, CMS styling, responsive behaviour, upgrade-safe design |
+## Extension, CMS & Theme Case Studies
+
+| Case study | What it covers |
+|---|---|
+| [Product Group Page — Specification Table Listings](docs/product-group-page-plugin.md) | Storefront controllers and routes, page loader, service layer, migration and custom fields, administration column builder, and lazy-loaded interactive tables |
+| [Product Detail Dropdown Sections](docs/product-dropdown-plugin.md) | Criteria enrichment, configuration-driven content assembly, media resolution, custom administration component, and CMS element |
+| [B2B Storefront Enhancements](docs/b2b-storefront-enhancements.md) | Shopware Commercial integration, multi-warehouse stock, shopping-list imagery, locale-aware label resolution, and batched loading |
+| [Brand / Manufacturer Slider — CMS Element](docs/brand-slider-cms-element.md) | Custom CMS element and block, CMS data resolver, DAL criteria, administration configuration, and responsive storefront slider |
+| [Featured Category Sections — CMS Elements and Page Extension](docs/featured-category-cms-elements.md) | CMS elements plus a configuration-driven page extension via event subscriber, with sales-channel-scoped configuration |
+| [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS architecture, storefront JavaScript plugins, CMS styling, responsive behaviour, and upgrade-conscious design |
 
 ## My Shopware Experience
 
 I have delivered two Shopware 6 ecommerce websites and developed multiple
-custom plugins and a custom storefront theme, including CMS elements and
-blocks, storefront controllers and routes, page loaders and event subscribers,
-database migrations, custom administration components, and integrations with
-Shopware Commercial B2B features.
+custom plugins and a custom storefront theme. My Shopware work includes CMS
+elements and blocks, storefront controllers and routes, page loaders and event
+subscribers, database migrations, custom administration components, catalog
+work, and integrations with Shopware Commercial B2B features.
 
 For Shopware projects I work across the full application stack, including:
 
 - Technical planning and Shopware architecture
 - Symfony and PHP backend development
-- Shopware DAL entities, repositories, criteria and associations
+- Shopware DAL entities, repositories, criteria, and associations
 - Custom plugins and services
 - Administration extensions using Vue-based Shopware components
-- Custom product and entity fields
-- Storefront controllers, subscribers and routes
-- Twig storefront templates
-- Shopware CMS elements, blocks and layouts
+- Custom product, category, and entity fields
+- Storefront controllers, subscribers, routes, and page extensions
+- Twig storefront templates and CMS rendering
+- Shopware CMS elements, blocks, layouts, and Shopping Experiences
 - Theme development and storefront customization
-- Data import, migration and synchronization
-- API integrations
-- Configuration and multi-channel functionality
-- Debugging, deployment and production support
-- Linux, Nginx, PHP-FPM, database and server maintenance
+- Data import, migration, and synchronization
+- API and third-party integrations
+- Sales-channel-scoped configuration and multi-channel functionality
+- Performance investigation, debugging, and production troubleshooting
+- Deployment, Linux, Nginx, PHP-FPM, Redis, OpenSearch, and server maintenance
 
 ## My Responsibilities
 
@@ -67,10 +73,29 @@ Depending on the project, my responsibilities include:
 - Product and catalog data migration
 - API and third-party integrations
 - Performance investigation and production troubleshooting
-- Deployment, Linux, Nginx, PHP-FPM, Redis, and OpenSearch support
+- Code review, debugging, deployment, and ongoing maintenance
+- Linux, Nginx, PHP-FPM, Redis, and OpenSearch support
+
+## Engineering Approach
+
+Across the case studies in this repository, I focus on a few recurring
+principles:
+
+- Extend Shopware through supported services, events, DAL, CMS, and theme
+  inheritance instead of modifying core files.
+- Keep merchant-facing configuration inside the administration wherever it
+  reduces repeated development work.
+- Scope data and configuration to the active sales channel when channel
+  behaviour differs.
+- Load only the associations and records required by the current feature and
+  avoid per-item repository lookups inside render loops.
+- Keep storefront markup responsive and accessible, while reusing platform
+  components where practical.
+- Treat maintainability and upgrade effort as design constraints rather than
+  post-launch cleanup tasks.
 
 ## Technologies
 
 `Shopware 6` `PHP` `Symfony` `Twig` `Vue.js`
 `DAL` `MySQL` `JavaScript` `SCSS` `REST APIs`
-`Linux` `Nginx` `Redis` `OpenSearch`
+`Linux` `Nginx` `PHP-FPM` `Redis` `OpenSearch`

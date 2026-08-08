@@ -11,7 +11,7 @@ Shopware's core category navigation renders the tree as it is structured. There 
 There was also a second, subtler requirement. Two different merchant workflows needed the same output:
 
 - Some stores build the homepage in the layout builder and expect the section to be a draggable element like any other.
-- Others wanted the section to be a plugin-level setting — configured once per sales channel, appearing automatically, with no risk of an editor deleting it while rearranging a layout.
+- Others wanted the section to be a plugin-level setting — configured once per sales channel and rendered independently of layout-editor changes.
 
 Building for only one of those would have left the other workflow unserved.
 
@@ -21,12 +21,12 @@ Two curated category sections — a **featured** set and a **selected** set, so 
 
 **Path one: CMS elements.** Both sections are registered as CMS blocks and elements, placeable through the standard layout builder. Editors pick categories, set a section heading, and position the block anywhere in any layout.
 
-**Path two: plugin configuration.** Both sections are also exposed in the plugin's configuration screen, where an administrator enables the section, sets its heading, and selects categories using Shopware's own entity-picker component. When enabled, the section is injected into the homepage automatically.
+**Path two: plugin configuration.** Both sections are also exposed in the plugin's configuration screen, where an administrator enables the section, sets its heading, and selects categories using Shopware's own entity-picker component. When enabled, the section is injected into the homepage by the plugin.
 
 Both paths converge on the same presentation and the same category payload. Merchants choose the workflow that suits how they operate rather than adapting to how the plugin was built.
 
 **Data integrity comes from the model.** Categories are referenced by identifier and resolved live at render time, with names, images, and URLs read from the current category records. Because categories are resolved from current Shopware records rather than hard-coded markup, renamed or reorganized categories remain much easier to
-keep synchronized and the risk of stale storefront links is significantly reduced. This is the property the hand-built CMS block could never provide, and it is why the feature was worth building rather than documenting a convention.
+keep synchronized and the risk of stale storefront links is significantly reduced. This is a key advantage over hard-coded CMS markup and was one reason to implement the feature as a structured extension.
 
 **Links resolve through SEO URLs.** Each tile links via the category's SEO URL, so shoppers and search engines land on the canonical listing address rather than a technical route.
 
@@ -50,7 +50,7 @@ I designed and implemented both sections and both integration paths:
 - Two **CMS element resolvers**, one per section, tagged as CMS data resolvers.
 - One **event subscriber**, tagged as a kernel event subscriber, receiving the system configuration service, the category repository, the media repository, and a logger.
 
-No custom entities, tables, or controllers. Both sections compose existing category data, which keeps the plugin free of migrations and of any schema to maintain across upgrades.
+No custom entities, tables, or controllers are required. Both sections compose existing category data, so the feature does not introduce plugin-owned persistence or schema to maintain.
 
 **Subscribers.** The subscriber listens to the generic page-loaded event and guards on the request's route so it acts only on the homepage — every other page returns immediately, before any configuration read or query. It then reads the plugin's configuration **scoped to the current sales channel**, and for each enabled section resolves the configured categories and attaches the result to the page as a named page extension. Templates read those extensions; the subscriber does no rendering.
 
@@ -58,7 +58,7 @@ Attaching data as page extensions rather than mutating the page object is what k
 
 **Data resolution.** Both resolvers implement the two-phase CMS contract: a collect phase declaring criteria for the configured category IDs with media and SEO URL associations, keyed per slot; and an enrich phase mapping results into a flat payload of identifier, translated name, translated description, image URL, and SEO URL, attached to the slot as a struct.
 
-The resolvers also handle a real practical problem: **the administration's live preview and the storefront supply different context objects**. Each resolver resolves a framework context defensively — preferring the sales-channel context when rendering the storefront, falling back through the available context accessor, and finally to a default context for preview. Without this the element renders correctly on the storefront and appears broken in the layout builder, which is exactly the situation that makes an editor distrust a custom element.
+The resolvers also handle a real practical problem: **the administration's live preview and the storefront supply different context objects**. Each resolver resolves a framework context defensively — preferring the sales-channel context when rendering the storefront, falling back through the available context accessor, and finally to a default context for preview. Handling both contexts keeps the element usable in the administration preview as well as on the storefront.
 
 **Configuration handling.** Category identifiers may arrive as an array or as a delimited string depending on the input path, so both resolvers normalise to an array — stripping quoting, trimming, and filtering empties — before building criteria. Every configuration read has a default.
 
@@ -85,23 +85,23 @@ The resolvers also handle a real practical problem: **the administration's live 
 
 ## Performance
 
-**Guard before you work.** The subscriber checks the route before doing anything else. Every non-homepage request — the overwhelming majority of traffic — exits the listener immediately, without a configuration read or a query. Placing this check first rather than after the configuration load is what keeps a homepage feature from costing anything on product and listing pages.
+**Guard before you work.** The subscriber checks the route before doing anything else. Non-homepage requests exit immediately, before configuration reads or category-loading work are performed.
 
-**Batched CMS resolution.** The element resolvers return criteria from the collect phase rather than querying directly, so the platform's CMS layer resolves every slot on the page together instead of once per element.
+**Coordinated CMS data loading.** The element resolvers return criteria from the collect phase rather than querying directly, allowing Shopware's CMS data-resolution layer to coordinate loading with the other CMS elements on the page.
 
 **Associations declared, not lazily traversed.** Media and SEO URL associations are declared on the criteria, so images and links are loaded in the same query as the categories. Resolving them per item inside the render loop would produce an N+1 pattern that scales with the number of tiles.
 
 **Flat render payloads.** Categories are mapped to plain arrays of scalars before reaching Twig, so the template performs no entity traversal or lazy loading while rendering.
 
-**Bounded by configuration.** Sections render only the explicitly selected categories. There is no unbounded query, and no query at all when a section is disabled or has no selection.
+**Bounded by configuration.** Sections render only explicitly selected categories, and disabled or empty sections return before category-loading work is performed.
 
-**Section-level short-circuiting.** Each section is independently enabled, so a store using only one pays only for that one.
+**Section-level short-circuiting.** Each section is independently enabled, so disabled sections do not perform their category-loading work.
 
 ## Multi-Channel Support
 
 Multi-channel behaviour was a first-class requirement and is handled at both integration paths.
 
-**Configuration-driven sections** read plugin configuration **scoped to the sales channel of the current request**. Each channel independently controls whether each section is enabled, its heading, and which categories it promotes. A single installation therefore runs different curated merchandising per channel — for example a B2B channel promoting industrial categories while a retail channel promotes consumer ones — from the same catalog and the same plugin, with no duplicated data and no per-channel deployment.
+**Configuration-driven sections** read plugin configuration **scoped to the sales channel of the current request**. Each channel independently controls whether each section is enabled, its heading, and which categories it promotes. A single installation therefore runs different curated merchandising per channel — for example a B2B channel promoting industrial categories while a retail channel promotes consumer ones — from the same catalog and the same plugin, without duplicating the underlying catalog data or maintaining separate code paths per channel.
 
 **CMS-driven sections** inherit channel scoping from Shopware's own layout assignment: layouts are assigned per sales channel, so element configuration is naturally per channel.
 
@@ -110,7 +110,7 @@ Category names and descriptions resolve through the translation layer, and links
 ## Accessibility
 
 - Category tiles use a stretched link with an accessible name derived from the category name, so the entire tile is a single, correctly-labelled target rather than several competing links to the same destination.
-- Images carry the category name as alt text, with a default image fallback so a tile without artwork is never a broken image.
+- Images carry the category name as alt text, with a default-image fallback when category artwork is unavailable.
 - Section headings are real headings, so the sections appear in a screen reader's document outline.
 - The responsive grid reflows by column count rather than by hiding content, so no category becomes unreachable at small viewport sizes.
 

@@ -23,7 +23,7 @@ A configuration-driven accordion on the product page, composed entirely in the a
 - **The core product description** is available as a section item, so long-form copy can be placed alongside specifications rather than only in its default position.
 - **Everything else** renders as text or rich content.
 
-Media detection is automatic: the plugin recognises identifier-shaped values, resolves them, and renders links. The merchant selects a custom field; they do not have to declare what type it is.
+Media values are detected from the configured field value shape: identifier-like values are resolved as media and rendered as links, while other values follow the text-content path. The merchant selects a custom field without maintaining a second content-type setting.
 
 **Empty content disappears.** Items with no value are skipped, sections whose items all resolve empty are dropped, and if nothing resolves the page renders unchanged. A configuration built for a fully-specified product does not produce a page of empty accordions on a sparsely-specified one — which is what makes one configuration usable across an entire catalog rather than requiring per-product curation.
 
@@ -41,14 +41,14 @@ I designed and implemented the plugin end to end:
 
 ## Architecture
 
-**Services.** A single event subscriber, registered in the container with the system configuration service and the media repository injected, and discovered through the kernel event subscriber tag. No entities, tables, migrations, or controllers — the plugin composes data that already exists, which is what keeps it free of schema and of upgrade cost.
+**Services.** A single event subscriber, registered in the container with the system configuration service and the media repository injected, and discovered through the kernel event subscriber tag. No custom entities, tables, migrations, or controllers are required. The plugin composes data that already exists, avoiding plugin-owned persistence and reducing schema-related maintenance.
 
 **Subscribers.** The subscriber listens to two product page events, and the pairing is the key architectural decision:
 
 - **Product page criteria event** — adds the property and property-group associations to the page's criteria *before* the product is loaded. This is what makes the second listener possible without extra queries.
 - **Product page loaded event** — reads the channel-scoped configuration, builds the sections, and attaches them to the page as a named extension.
 
-Enriching the criteria rather than re-fetching the product in the loaded listener is the difference between zero additional queries and one per product page view. Property data arrives on the product in the page's own query.
+Enriching the criteria rather than re-fetching the product in the loaded listener allows the required property data to arrive with the product page load, avoiding a separate product re-query for the feature.
 
 **Configuration handling.** Configuration is stored as a JSON string and decoded defensively — a non-string, malformed, or non-array value yields an empty configuration and the subscriber returns without touching the page. Sections and their items are sorted by stored position on decode, and again after building, so ordering is stable regardless of how the configuration was persisted.
 
@@ -58,15 +58,15 @@ Enriching the criteria rather than re-fetching the product in the loaded listene
 - *Custom fields* are read from the product, with the core description special-cased to read from the translation accessor.
 - *Media detection* tests values against an identifier pattern — accepting both a single value and an array — and resolves matches through the media repository into link data. A non-matching value short-circuits to text rendering without a query.
 
-**DAL and repositories.** The media repository is injected as a service and queried only when a value actually looks like media identifiers. Property data is never queried directly; it arrives via the enriched page criteria.
+**DAL and repositories.** The media repository is injected as a service and queried only when a value looks like media identifiers. Property data arrives through the enriched product-page criteria, so the feature does not require a separate property repository query.
 
 **Structs.** Built sections are attached to the page as an array struct under a namespaced key, consumed from Twig.
 
-**Administration components.** A section builder component, injected with the repository factory, loads property groups and custom fields to populate its pickers. It maintains sections and items in local state with explicit add, remove, and move operations, renumbering positions on each mutation, and emits its serialised value on **every** change — across the several event names the platform's configuration field binding may listen for, so the value persists regardless of binding path. The component is bound to a configuration field by component name, so it replaces the default text input in the plugin's configuration screen.
+**Administration components.** A section builder component, injected with the repository factory, loads property groups and custom fields to populate its pickers. It maintains sections and items in local state with explicit add, remove, and move operations, renumbering positions on each mutation, and emits its serialised value as the configuration changes so the custom field remains compatible with the administration configuration binding used by the plugin screen. The component is bound to a configuration field by component name, so it replaces the default text input in the plugin's configuration screen.
 
 CMS block and element registration, with canvas and preview components, provides the second placement path.
 
-**Storefront templates.** A product-detail template renders the accordion; a CMS element template includes the same partial, so both placements share one rendering path and cannot diverge.
+**Storefront templates.** A product-detail template renders the accordion; a CMS element template includes the same partial, so both placements share the same rendering path and are easier to keep consistent.
 
 ## Shopware Concepts Used
 
@@ -85,11 +85,11 @@ CMS block and element registration, with canvas and preview components, provides
 
 ## Performance
 
-**No additional product queries.** The plugin's most consequential performance decision is enriching the page criteria rather than re-fetching. Property and group data arrive with the product the page was already loading, so the feature costs no additional round trip on the product page.
+**Criteria enrichment instead of re-fetching.** Property and group data are added to the product page criteria before load, so the feature avoids a separate product re-query solely to collect those associations.
 
-**Media queried only when needed.** Media resolution runs only when a value matches the identifier pattern, and resolves all identifiers in a single repository call rather than one per file. Text and specification content never touches the database.
+**Media queried only when needed.** Media resolution runs only when a value matches the identifier pattern, and matching identifiers are resolved in a batched repository call rather than one lookup per file. Text and specification content requires no additional repository lookup beyond data already available on the loaded product page.
 
-**Early exit on every path.** The subscriber returns immediately if configuration is absent or undecodable, and again if no sections resolve. A store that has not configured the feature pays a single configuration read.
+**Early exits.** The subscriber returns when configuration is absent or undecodable, and again if no sections resolve, preventing section-building and media work when the feature is not configured for the channel.
 
 **Work proportional to configuration.** Only configured groups and fields are resolved. Property filtering runs over the product's already-loaded collection in memory.
 
@@ -111,7 +111,7 @@ Property group names, option names, and product descriptions resolve through the
 - Each section header is a real button with a programmatic relationship to the panel it controls.
 - Section headings use real heading elements, so sections appear in the document outline and can be navigated by heading.
 - Specification content renders as a real table with row headers, so name/value relationships are announced correctly rather than being conveyed by layout alone.
-- Download links carry the media title or filename as their text, so links are never announced as bare URLs.
+- Download links carry the media title or filename as their text, so assistive technology receives meaningful link text instead of relying on a bare URL.
 
 ## Screenshots
 
