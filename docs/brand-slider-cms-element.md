@@ -28,7 +28,7 @@ A first-class CMS element and block that merchants place through the standard Sh
 - If there is nothing to scroll, the slider, its arrow controls, autoplay, and looping all switch off. A single brand renders as a static logo rather than an autoplaying carousel of one, which is the tell-tale sign of a section that was configured but not thought about.
 - Per-breakpoint slide counts derive from that same clamped value, so the section never has to be re-tuned after adding or removing a supplier.
 
-A merchant cannot produce a broken-looking section through configuration alone, which was the design goal — the failure modes are handled in the template rather than left to the person filling in the form.
+The implementation handles the main configuration edge cases so merchants are less likely to produce incomplete or visually broken slider states.
 
 ## My Contribution
 
