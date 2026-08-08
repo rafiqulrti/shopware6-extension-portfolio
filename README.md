@@ -15,9 +15,10 @@ as part of my work at Harris Digital.
 
 | Case study | What it covers |
 |---|---|
-| [Brand / Manufacturer Slider — CMS Element](docs/brand-slider-cms-element.md) | Custom CMS element and block, CMS data resolver, batched DAL loading, data-driven responsive slider |
-| [Featured Category Sections — CMS Elements and Page Extension](docs/featured-category-cms-elements.md) | Two parallel integration paths — CMS elements and a config-driven page extension via event subscriber, scoped per sales channel |
-| [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS architecture, storefront JS plugins, CMS styling, responsive behaviour, upgrade-safe design |
+| [Laticrete — Shopware 6 Full-Stack Ecommerce](docs/laticrete-shopware6-project.md) | End-to-end Shopware delivery, storefront, CMS, plugins, theme, catalog work, deployment and production support |
+| [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS, storefront JavaScript, responsive behaviour and upgrade-conscious design |
+| [Featured Category Sections](docs/featured-category-cms-elements.md) | CMS elements, page extensions, subscribers, DAL, sales-channel-scoped configuration |
+| [Brand / Manufacturer Slider](docs/brand-slider-cms-element.md) | CMS element, custom resolver, DAL criteria, administration configuration and responsive storefront slider |
 
 ## My Shopware Experience
 
