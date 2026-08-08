@@ -15,6 +15,9 @@ as part of my work at Harris Digital.
 
 | Case study | What it covers |
 |---|---|
+| [Product Group Page — Specification Table Listings](docs/product-group-page-plugin.md) | Storefront controller and routes, page loader, service layer, migration and custom fields, admin column builder, lazy-loaded interactive tables |
+| [Product Detail Dropdown Sections](docs/product-dropdown-plugin.md) | Criteria enrichment, config-driven content assembly, media resolution, custom admin config component, CMS element |
+| [B2B Storefront Enhancements](docs/b2b-storefront-enhancements.md) | Shopware Commercial integration — multi-warehouse stock, shopping list imagery, locale-aware label resolution, batched loading |
 | [Brand / Manufacturer Slider — CMS Element](docs/brand-slider-cms-element.md) | Custom CMS element and block, CMS data resolver, batched DAL loading, data-driven responsive slider |
 | [Featured Category Sections — CMS Elements and Page Extension](docs/featured-category-cms-elements.md) | Two parallel integration paths — CMS elements and a config-driven page extension via event subscriber, scoped per sales channel |
 | [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS architecture, storefront JS plugins, CMS styling, responsive behaviour, upgrade-safe design |
@@ -22,7 +25,10 @@ as part of my work at Harris Digital.
 ## My Shopware Experience
 
 I have delivered two Shopware 6 ecommerce websites and developed multiple
-custom plugins and a custom storefront theme.
+custom plugins and a custom storefront theme, including CMS elements and
+blocks, storefront controllers and routes, page loaders and event subscribers,
+database migrations, custom administration components, and integrations with
+Shopware Commercial B2B features.
 
 For Shopware projects I work across the full application stack, including:
 
