@@ -11,6 +11,14 @@ as part of my work at Harris Digital.
 > source code, credentials, private repository addresses, customer data,
 > production configuration, or confidential client information.
 
+## Case Studies
+
+| Case study | What it covers |
+|---|---|
+| [Brand / Manufacturer Slider — CMS Element](docs/brand-slider-cms-element.md) | Custom CMS element and block, CMS data resolver, batched DAL loading, data-driven responsive slider |
+| [Featured Category Sections — CMS Elements and Page Extension](docs/featured-category-cms-elements.md) | Two parallel integration paths — CMS elements and a config-driven page extension via event subscriber, scoped per sales channel |
+| [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS architecture, storefront JS plugins, CMS styling, responsive behaviour, upgrade-safe design |
+
 ## My Shopware Experience
 
 I have delivered two Shopware 6 ecommerce websites and developed multiple
