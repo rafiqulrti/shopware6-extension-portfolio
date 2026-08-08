@@ -25,7 +25,8 @@ Two curated category sections — a **featured** set and a **selected** set, so 
 
 Both paths converge on the same presentation and the same category payload. Merchants choose the workflow that suits how they operate rather than adapting to how the plugin was built.
 
-**Data integrity comes from the model.** Categories are referenced by identifier and resolved live at render time, with names, images, and URLs read from the current category records. A renamed category updates itself; an unpublished one drops out; a URL never goes stale. This is the property the hand-built CMS block could never provide, and it is why the feature was worth building rather than documenting a convention.
+**Data integrity comes from the model.** Categories are referenced by identifier and resolved live at render time, with names, images, and URLs read from the current category records. Because categories are resolved from current Shopware records rather than hard-coded markup, renamed or reorganized categories remain much easier to
+keep synchronized and the risk of stale storefront links is significantly reduced. This is the property the hand-built CMS block could never provide, and it is why the feature was worth building rather than documenting a convention.
 
 **Links resolve through SEO URLs.** Each tile links via the category's SEO URL, so shoppers and search engines land on the canonical listing address rather than a technical route.
 
