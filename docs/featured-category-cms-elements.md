@@ -85,7 +85,7 @@ The resolvers also handle a real practical problem: **the administration's live 
 
 ## Performance
 
-**Guard before you work.** The subscriber checks the route before doing anything else. Every non-homepage request — the overwhelming majority of traffic — exits the listener immediately, without a configuration read or a query. Placing this check first rather than after the configuration load is what keeps a homepage feature from costing anything on product and listing pages.
+**Guard before you work.** The subscriber checks the route before doing anything else. Non-homepage requests exit immediately, before configuration reads or category-loading work are performed.
 
 **Batched CMS resolution.** The element resolvers return criteria from the collect phase rather than querying directly, so the platform's CMS layer resolves every slot on the page together instead of once per element.
 
