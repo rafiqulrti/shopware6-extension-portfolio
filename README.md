@@ -42,6 +42,26 @@ For Shopware projects I work across the full application stack, including:
 - Debugging, deployment and production support
 - Linux, Nginx, PHP-FPM, database and server maintenance
 
+## My Responsibilities
+
+I work across the complete Shopware 6 delivery lifecycle, from technical
+planning through development, deployment, and production support.
+
+Depending on the project, my responsibilities include:
+
+- Shopware solution architecture and technical planning
+- PHP and Symfony backend development
+- Custom plugin architecture and implementation
+- DAL repositories, criteria, entities, associations, and migrations
+- Administration extensions and CMS components
+- Twig storefront development and custom theme implementation
+- JavaScript and SCSS storefront functionality
+- Sales-channel-scoped configuration and multi-channel behaviour
+- Product and catalog data migration
+- API and third-party integrations
+- Performance investigation and production troubleshooting
+- Deployment, Linux, Nginx, PHP-FPM, Redis, and OpenSearch support
+
 ## Technologies
 
 `Shopware 6` `PHP` `Symfony` `Twig` `Vue.js`
