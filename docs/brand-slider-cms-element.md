@@ -99,7 +99,21 @@ Manufacturer names resolve through the translation layer, so a multi-language ch
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Suggested: the element's configuration panel in the layout builder, and the rendered slider on desktop and mobile using placeholder brand logos.
+### Administration Configuration
+
+The CMS configuration view allows the merchant to select the manufacturers displayed by the element through the standard Shopware layout-builder workflow.
+
+<p align="center">
+  <img src="../assets/screenshots/brand-slider-admin.jpg" alt="Shopware 6 brand slider CMS element administration configuration" width="900">
+</p>
+
+### Storefront Result
+
+The storefront renders the selected manufacturers as a responsive supplier/brand section that links shoppers into brand-specific catalog browsing.
+
+<p align="center">
+  <img src="../assets/screenshots/brand-slider-storefront.jpg" alt="Shopware 6 responsive brand and manufacturer slider storefront" width="900">
+</p>
 
 ---
 

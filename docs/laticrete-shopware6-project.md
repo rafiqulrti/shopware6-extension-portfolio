@@ -81,9 +81,29 @@ of custom code that had to be reviewed during platform updates.
 
 ## Screenshots
 
-> **To be added** — sanitized or approved screenshots only. Recommended:
-> homepage, category listing, product detail, selected CMS configuration, and a
-> representative administration or plugin screen.
+The screenshots below show the storefront implementation while keeping private administration data and production configuration out of the portfolio.
+
+### Homepage
+
+The homepage demonstrates the delivered Shopware storefront, navigation, CMS-driven content, merchandising sections, and responsive presentation.
+
+<p align="center">
+  <img src="../assets/screenshots/laticrete-homepage-preview.jpg" alt="Laticrete Shopware 6 homepage storefront" width="900">
+</p>
+
+[View the full homepage capture](../assets/screenshots/laticrete-homepage.png)
+
+### Category Listing
+
+The category listing demonstrates catalog navigation, product discovery, listing presentation, and responsive storefront behaviour.
+
+<p align="center">
+  <img src="../assets/screenshots/laticrete-category-listing-preview.jpg" alt="Laticrete Shopware 6 category listing" width="900">
+</p>
+
+[View the full category-listing capture](../assets/screenshots/laticrete-category-listing.png)
+
+> Additional product-detail and administration screenshots can be added later when a suitable public or sanitized capture is available.
 
 ---
 

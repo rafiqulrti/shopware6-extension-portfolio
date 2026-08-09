@@ -113,7 +113,7 @@ The loading strategy batches product identifiers and performs a second parent lo
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Suggested: the product page showing per-warehouse stock, a shopping list with resolved product imagery, and resolved option labels on a product page. Use demonstration catalog data with placeholder warehouse names and stock figures.
+> Screenshots are not included in the current package yet. The next useful captures are per-warehouse stock on a product page and a B2B shopping list showing resolved product imagery. Use public, sanitized, or demonstration data only.
 
 ---
 

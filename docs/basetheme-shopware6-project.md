@@ -78,9 +78,15 @@ storefront.
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Recommended:
-> homepage, category listing, product detail, theme configuration, and selected
-> CMS or administration functionality.
+### Homepage
+
+The homepage capture demonstrates the reusable storefront foundation, responsive layout, merchandising areas, navigation, and CMS presentation delivered through the Shopware implementation.
+
+<p align="center">
+  <img src="../assets/screenshots/basetheme-homepage.png" alt="Basetheme Shopware 6 homepage storefront" width="900">
+</p>
+
+> Additional category, product-detail, theme-configuration, and CMS screenshots can be added as the public portfolio evolves.
 
 ---
 

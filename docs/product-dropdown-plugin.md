@@ -115,7 +115,7 @@ Property group names, option names, and product descriptions resolve through the
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Suggested: the section builder in the plugin configuration screen, and the rendered accordion on a product page showing a specification table and a downloads section. Use demonstration product data and placeholder document names.
+> Screenshots are not included in the current package yet. The next useful captures are the administration section builder and the rendered product-page accordion showing specification and download content. Use public, sanitized, or demonstration data only.
 
 ---
 

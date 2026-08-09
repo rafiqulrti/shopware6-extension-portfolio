@@ -29,6 +29,36 @@ as part of my work at Harris Digital.
 | [Featured Category Sections — CMS Elements and Page Extension](docs/featured-category-cms-elements.md) | CMS elements plus a configuration-driven page extension via event subscriber, with sales-channel-scoped configuration |
 | [Custom Storefront Theme](docs/custom-shopware-theme.md) | Theme configuration, Twig inheritance, SCSS architecture, storefront JavaScript plugins, CMS styling, responsive behaviour, and upgrade-conscious design |
 
+## Selected Visuals
+
+A small selection of screenshots from the case studies is shown below. Detailed pages contain the corresponding administration and storefront views, along with links to full-length captures where useful.
+
+### Full-Stack Shopware Storefront
+
+<p align="center">
+  <img src="assets/screenshots/laticrete-homepage-preview.jpg" alt="Shopware 6 full-stack ecommerce storefront" width="900">
+</p>
+
+### Product Group Page
+
+<p align="center">
+  <img src="assets/screenshots/product-group-page-desktop-preview.jpg" alt="Shopware 6 specification-oriented Product Group Page" width="900">
+</p>
+
+### Brand / Manufacturer CMS Element
+
+<p align="center">
+  <img src="assets/screenshots/brand-slider-storefront.jpg" alt="Shopware 6 brand and manufacturer CMS element storefront" width="900">
+</p>
+
+### Custom Storefront Theme
+
+<p align="center">
+  <img src="assets/screenshots/custom-theme-product-detail.png" alt="Shopware 6 custom storefront theme product detail page" width="900">
+</p>
+
+> Screenshots are limited to public storefront views or sanitized/demonstration data where appropriate. Credentials, private repository information, customer data, and production configuration are intentionally excluded.
+
 ## My Shopware Experience
 
 I have delivered two Shopware 6 ecommerce websites and developed multiple

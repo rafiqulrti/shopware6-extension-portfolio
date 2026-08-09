@@ -167,7 +167,37 @@ Upgrade maintainability was a design constraint from the outset, not a later con
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Suggested: the theme configuration screen in the administration, header with the top banner and sticky navigation, the category listing with the per-page control and filter-style navigation, the mobile off-canvas navigation, and the restructured product detail page. Use demonstration catalog data and placeholder branding.
+### Theme Configuration
+
+The theme exposes merchant-adjustable presentation settings through Shopware administration rather than requiring code changes for routine storefront configuration.
+
+<p align="center">
+  <img src="../assets/screenshots/custom-theme-configuration.jpg" alt="Shopware 6 custom theme configuration in administration" width="900">
+</p>
+
+### Category Listing
+
+The listing view demonstrates the customized catalog presentation, controls, filters, and theme styling.
+
+<p align="center">
+  <img src="../assets/screenshots/custom-theme-listing.jpg" alt="Shopware 6 custom theme category listing" width="900">
+</p>
+
+### Mobile Navigation
+
+The mobile navigation uses an off-canvas presentation designed for deep ecommerce catalogs on narrow viewports.
+
+<p align="center">
+  <img src="../assets/screenshots/custom-theme-mobile-navigation.jpg" alt="Shopware 6 custom theme mobile off-canvas navigation" width="360">
+</p>
+
+### Product Detail
+
+The product-detail view demonstrates the customized information hierarchy, product media, purchase area, related content, and theme-level presentation.
+
+<p align="center">
+  <img src="../assets/screenshots/custom-theme-product-detail.png" alt="Shopware 6 custom theme product detail page" width="900">
+</p>
 
 ---
 

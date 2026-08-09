@@ -116,7 +116,31 @@ Category names and descriptions resolve through the translation layer, and links
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Suggested: the plugin configuration screen showing the category picker, the element configuration panel in the layout builder, and the rendered sections on desktop and mobile using placeholder category names and images.
+This feature contains two independently configurable category sections. The screenshots below show both the administration selection workflow and their storefront output using demonstration content.
+
+### Selected Category Section — Administration
+
+<p align="center">
+  <img src="../assets/screenshots/selected-categories-admin.jpg" alt="Shopware 6 selected category CMS element administration picker" width="900">
+</p>
+
+### Selected Category Section — Storefront
+
+<p align="center">
+  <img src="../assets/screenshots/selected-categories-storefront.jpg" alt="Shopware 6 selected category section on the storefront" width="900">
+</p>
+
+### Featured Promotional Categories — Administration
+
+<p align="center">
+  <img src="../assets/screenshots/featured-categories-admin.jpg" alt="Shopware 6 featured promotional categories administration picker" width="900">
+</p>
+
+### Featured Promotional Categories — Storefront
+
+<p align="center">
+  <img src="../assets/screenshots/featured-categories-storefront.jpg" alt="Shopware 6 featured promotional categories storefront section" width="900">
+</p>
 
 ---
 

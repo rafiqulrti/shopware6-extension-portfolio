@@ -139,7 +139,33 @@ The feature is channel-aware at every layer.
 
 ## Screenshots
 
-> **To be added** — sanitized or demonstration data only. Suggested: the column builder on the category detail page, a rendered specification table with sorting and search, an expanded inline row detail, and the mobile presentation. Use demonstration catalog data with placeholder product numbers and specifications.
+### Administration — Column Builder
+
+The administration extension gives merchants a purpose-built interface for selecting and ordering the fields used by the specification table instead of editing the underlying JSON configuration directly.
+
+<p align="center">
+  <img src="../assets/screenshots/product-group-page-admin.jpg" alt="Shopware 6 Product Group Page administration column builder" width="900">
+</p>
+
+### Desktop Storefront
+
+The desktop view shows the specification-oriented product table, category navigation, filters, search, sorting, stock and pricing context, and bulk product-selection workflow.
+
+<p align="center">
+  <img src="../assets/screenshots/product-group-page-desktop-preview.jpg" alt="Shopware 6 Product Group Page desktop specification table" width="900">
+</p>
+
+[View the full desktop capture](../assets/screenshots/product-group-page-desktop.png)
+
+### Mobile Storefront
+
+The mobile capture demonstrates how the same data-heavy catalog experience is adapted to a narrow viewport without removing the core browsing and comparison workflow.
+
+<p align="center">
+  <img src="../assets/screenshots/product-group-page-mobile-preview.jpg" alt="Shopware 6 Product Group Page mobile storefront" width="360">
+</p>
+
+[View the full mobile capture](../assets/screenshots/product-group-page-mobile.png)
 
 ---
 
